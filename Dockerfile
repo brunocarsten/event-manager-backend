@@ -12,5 +12,13 @@ WORKDIR /var/www
 
 COPY . /var/www
 
+RUN composer install --no-dev --prefer-dist --optimize-autoloader; \
+composer update; \
+composer clear-cache
+
+RUN php artisan key:generate
+# RUN php artisan migrate --force
+# RUN php artisan db:seed --force
+
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 777 /var/www/storage /var/www/bootstrap/cache
