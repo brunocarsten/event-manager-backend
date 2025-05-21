@@ -27,7 +27,7 @@ services:
     build:
       context: ../..
       dockerfile: Dockerfile
-    image: php:8.2-fpm
+    image: laravel_app:latest
     container_name: laravel_app
     working_dir: /var/www
     user: "1000:1000"
@@ -35,7 +35,7 @@ services:
       - UID=1000
       - GID=1000
     volumes:
-      - ../..:/var/www
+      - /var/www/vendor/
     depends_on:
       db:
         condition: service_healthy
