@@ -17,6 +17,16 @@ class PersonResource extends JsonResource
     {
         $allocations = $this->allocations->groupBy('stage');
 
+
+        if ($allocations->isEmpty()) {
+            return [
+                'id' => $this->id,
+                'full_name' => $this->first_name . ' ' . $this->last_name,
+                'stage_1' => null,
+                'stage_2' => null,
+            ];
+        }
+
         return [
             'id' => $this->id,
             'full_name' => $this->first_name . ' ' . $this->last_name,

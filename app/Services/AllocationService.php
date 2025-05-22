@@ -37,6 +37,10 @@ class AllocationService
                 ->shuffle()
                 ->first();
 
+            if (!$room || !$coffee || !is_array([$room, $coffee]) || count([$room, $coffee]) === 0) {
+                return;
+            }
+
             Allocation::create([
                 'person_id' => $person->id,
                 'room_id' => $room?->id,
