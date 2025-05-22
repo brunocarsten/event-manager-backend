@@ -30,10 +30,10 @@ services:
     image: laravel_app:latest
     container_name: laravel_app
     working_dir: /var/www
-    user: "1000:1000"
-    environment:
-      - UID=1000
-      - GID=1000
+    # user: "1000:1000"
+    # environment:
+    #   - UID=1000
+    #   - GID=1000
     volumes:
       - /var/www/vendor/
     depends_on:
