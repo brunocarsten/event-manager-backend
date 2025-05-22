@@ -36,6 +36,7 @@ services:
     #   - GID=1000
     volumes:
       - /var/www/vendor/
+      - ../..:/var/www/
     depends_on:
       db:
         condition: service_healthy
