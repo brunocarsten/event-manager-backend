@@ -1,61 +1,213 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistema de Gerenciamento de Evento
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este é um sistema de backend desenvolvido em **Laravel 12.x**, com **Docker** (PHP 8.2-FPM, MySQL 8 e Nginx), que gerencia o cadastro de pessoas, salas e espaços de café, fazendo a alocação automática dos participantes em duas etapas de evento e dois intervalos de café.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🛠 Tecnologias
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+* **PHP 8.2** (FPM)
+* **Laravel 12.x**
+* **MySQL 8**
+* **Nginx**
+* **Docker & Docker Compose**
+* **Laravel Sanctum** (autenticação de API)
+* **Tailwind CSS** (estilos básicos)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🚀 Pré-requisitos
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+* Docker (versão >= 20.10)
+* Docker Compose (versão >= 1.29)
+* `git`
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 📂 Estrutura do Projeto
 
-## Laravel Sponsors
+```plaintext
+├── app/
+├── bootstrap/
+├── config/
+├── database/
+│   ├── factories/
+│   ├── migrations/
+│   └── seeders/
+├── docker/
+│   └── dev/
+│       ├── default.conf     # config Nginx
+│       └── docker-compose.yml
+├── public/
+├── resources/
+├── routes/
+│   └── api.php
+│   └── web.php
+├── storage/
+├── tests/
+├── .env.example
+├── Dockerfile
+├── README.md
+└── artisan
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 📝 Variáveis de Ambiente (`.env`)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Copie o arquivo de exemplo:
 
-## Contributing
+```bash
+cp .env.example .env
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Ajuste conforme necessário (padrão usado):
 
-## Code of Conduct
+```dotenv
+APP_NAME="EventManager"
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://localhost:8000
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+DB_CONNECTION=mysql
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=laravel
+DB_USERNAME=laravel_user
+DB_PASSWORD=laravel_pass
 
-## Security Vulnerabilities
+SANCTUM_STATEFUL_DOMAINS=localhost:3000
+SESSION_DRIVER=cookie
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## 🐳 Como rodar com Docker
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+No diretório `docker/dev`:
+
+1. Suba os containers e faça build:
+   ```bash
+   docker compose up  -d
+   ```
+2. Acesse o container da aplicação:
+   ```bash
+   docker compose exec app bash
+   ```
+3. As dependências são instaladas automaticamente pelo `docker`:
+   Gere a base de dados `migration`
+   - opcional `db:seed` para gerar registros de teste com o faker
+   ```bash
+   php artisan migrate
+   php artisan db:seed (opcional)
+   ```
+
+4. (Opcional) Execute testes:
+   ```bash
+   php artisan test
+   ```
+
+A aplicação estará disponível em: **[http://localhost:8000](http://localhost:8000)**
+
+---
+
+## 🔧 Configuração do Nginx como Reverse Proxy
+O arquivo docker/dev/default.conf configura o Nginx para funcionar como reverse proxy, encaminhando as requisições HTTP para o serviço PHP-FPM:
+```
+server {
+    listen 80;
+    server_name localhost;
+
+    location / {
+        proxy_pass         http://app:9000;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass app:9000;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+}
+```
+---
+
+## 📦 Endpoints Principais
+
+### Pessoas
+
+```
+GET    /api/people        (listar)
+POST   /api/people        (cadastrar)
+GET    /api/people/{id}   (detalhes + alocações)
+PUT    /api/people/{id}   (atualizar)
+```
+
+### Salas
+
+```
+GET    /api/rooms
+POST   /api/rooms
+GET    /api/rooms/{id}
+PUT    /api/rooms/{id}
+```
+
+### Espaços de Café
+
+```
+GET    /api/coffee-spaces
+POST   /api/coffee-spaces
+GET    /api/coffee-spaces/{id}
+PUT    /api/coffee-spaces/{id}
+```
+
+### Alocações
+
+```
+POST   /api/allocate                 (distribuí todos sem duplicar)
+GET    /api/allocations              (agrupado por pessoa)
+GET    /api/allocations/person/{id}
+```
+
+---
+
+## 🎨 Consumo da API (via Nuxt)
+
+No frontend Nuxt 3, configure `runtimeConfig.public.apiBase` para `http://localhost:8000/api`.
+Use o composable `useApiFetch(endpoint)` para chamadas que já desembalam o wrapper `{ data: ... }`.
+
+---
+
+## 🧪 Testes
+
+1. Execute:
+
+   ```bash
+   php artisan test
+   ```
+2. Os testes cobrem:
+
+   * Unidade de Models e Services
+   * Feature dos Endpoints de API
+
+---
+
+## 📑 Documentação
+
+Este README documenta:
+
+* Instalação e configuração
+* Principais endpoints
+
+Fique à vontade para estender com exemplos de request/response ou adicionar um arquivo OpenAPI em `docs/`.
+
+---
+
+## 🖋 License
+
+Licenciado sob MIT License. Feel free to use and modify.
